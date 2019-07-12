@@ -5,6 +5,7 @@ using Vuforia;
 
 public class ARTrackableEventHandler : DefaultTrackableEventHandler
 {
+    private bool mIsPlaced = false;
 
     protected override void OnTrackingFound()
     {
@@ -13,6 +14,9 @@ public class ARTrackableEventHandler : DefaultTrackableEventHandler
         if (mTrackableBehaviour)
         {
             GetComponentInChildren<LookAt>().LookAtOnce();
+
+            mIsPlaced = true;
+            Debug.Log("mochila: " + mIsPlaced);
         }
     }
 
@@ -22,7 +26,9 @@ public class ARTrackableEventHandler : DefaultTrackableEventHandler
 
         if (mTrackableBehaviour)
         {
+            mIsPlaced = false;
 
+            Debug.Log("mochila: " + mIsPlaced);
         }
     }
 

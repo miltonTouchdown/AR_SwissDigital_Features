@@ -6,51 +6,89 @@ using UnityEngine.UI;
 
 public class ARManager : MonoBehaviour
 {
+    // Indica si se ha colisionado con el suelo para ubicar objetos
+    public bool IsHitTest { get; private set; }
+
+    private static ARManager _instance;
+    public static ARManager Instance
+    {
+        get
+        {
+            return _instance;
+        }
+    }
+
+    void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
     void Start()
     {
-        DeviceTrackerARController.Instance.RegisterDevicePoseStatusChangedCallback(OnDevicePoseStatusChanged);
+        IsHitTest = false;
+        //DeviceTrackerARController.Instance.RegisterDevicePoseStatusChangedCallback(OnDevicePoseStatusChanged);
     }
 
     void OnDestroy()
     {
         Debug.Log("OnDestroy() called.");
 
-        DeviceTrackerARController.Instance.UnregisterDevicePoseStatusChangedCallback(OnDevicePoseStatusChanged);
+        //DeviceTrackerARController.Instance.UnregisterDevicePoseStatusChangedCallback(OnDevicePoseStatusChanged);
+    }
+
+    public void HandleInteractiveHitTest(HitTestResult result)
+    {
+        if (result == null)
+        {
+            if (IsHitTest)
+            {
+                IsHitTest = false;
+
+                if (onHitTest != null)
+                    onHitTest(IsHitTest);
+            }
+
+            return;
+        }
+        else
+        {
+            if (!IsHitTest)
+            {
+                IsHitTest = true;
+                
+                if(onHitTest != null)
+                    onHitTest(IsHitTest);
+            }
+        }
     }
 
     void OnDevicePoseStatusChanged(TrackableBehaviour.Status status, TrackableBehaviour.StatusInfo statusInfo)
     {
-        Debug.Log("GroundPlaneUI.OnDevicePoseStatusChanged(" + status + ", " + statusInfo + ")");
-
-        string statusMessage = "";
-
         switch (statusInfo)
         {
             case TrackableBehaviour.StatusInfo.NORMAL:
-                statusMessage = "Normal Status";
                 break;
             case TrackableBehaviour.StatusInfo.UNKNOWN:
-                statusMessage = "Limited Status";
                 break;
             case TrackableBehaviour.StatusInfo.INITIALIZING:
-                statusMessage = "Point your device to the floor and move to scan";
                 break;
             case TrackableBehaviour.StatusInfo.EXCESSIVE_MOTION:
-                statusMessage = "Move slower";
                 break;
             case TrackableBehaviour.StatusInfo.INSUFFICIENT_FEATURES:
-                statusMessage = "Not enough visual features in the scene";
                 break;
             case TrackableBehaviour.StatusInfo.INSUFFICIENT_LIGHT:
-                statusMessage = "Not enough light in the scene";
                 break;
             case TrackableBehaviour.StatusInfo.RELOCALIZING:
                 // Display a relocalization message in the UI if:
                 // * No AnchorBehaviours are being tracked
                 // * None of the active/tracked AnchorBehaviours are in TRACKED status
-
-                // Set the status message now and clear it none of conditions are met.
-                statusMessage = "Point camera to previous position to restore tracking";
 
                 StateManager stateManager = TrackerManager.Instance.GetStateManager();
                 if (stateManager != null)
@@ -64,28 +102,17 @@ public class ARManager : MonoBehaviour
                             {
                                 // If at least one of the AnchorBehaviours has Tracked status,
                                 // then don't display the relocalization message.
-                                statusMessage = "";
                             }
                         }
                     }
                 }
                 break;
             default:
-                statusMessage = "";
                 break;
         }
-
-        setTextCanvas(statusMessage);
-        // Uncomment the following line to show Status and StatusInfo values
-        //StatusMessage.Instance.Display(status.ToString() + " -- " + statusInfo.ToString());
     }
 
-    #region TESTING
-    public Text textCanvas;
-
-    public void setTextCanvas(string text)
-    {
-        textCanvas.text = text;
-    }
-    #endregion // Testing
+    // Indica si se ha detectado el suelo
+    public delegate void OnHitTest(bool value);
+    public static event OnHitTest onHitTest;
 }
