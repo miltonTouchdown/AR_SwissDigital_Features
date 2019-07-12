@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Test/AR_Without_Marker_Scene.unity
+    guid: 9a92547761c72464ab1d63e65e5358f4
   m_configObjects: {}
