@@ -7,7 +7,6 @@ Confidential and Proprietary - Protected under copyright and other laws.
 ==============================================================================*/
 
 using UnityEngine;
-using UnityEngine.UI;
 using Vuforia;
 
 /// <summary>
@@ -79,24 +78,6 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
             // Call OnTrackingLost() to hide the augmentations
             OnTrackingLost();
         }
-
-        switch (m_NewStatus)
-        {
-            case TrackableBehaviour.Status.NO_POSE:
-                {
-                    Debug.Log("Status info NO_POSE: " + mTrackableBehaviour.CurrentStatusInfo);
-                    //if (mTrackableBehaviour.CurrentStatusInfo == TrackableBehaviour.StatusInfo.UNKNOWN)
-                    //{
-                    //    Debug.Log("Status info: ")
-                    //}
-                    break;
-                }
-            case TrackableBehaviour.Status.TRACKED:
-                {
-                    Debug.Log("Status info TRACKED: " + mTrackableBehaviour.CurrentStatusInfo);
-                    break;
-                }
-        }
     }
 
     #endregion // PUBLIC_METHODS
@@ -107,8 +88,6 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
     {
         if (mTrackableBehaviour)
         {
-            setTextCanvas("on Tracking Found");
-
             var rendererComponents = mTrackableBehaviour.GetComponentsInChildren<Renderer>(true);
             var colliderComponents = mTrackableBehaviour.GetComponentsInChildren<Collider>(true);
             var canvasComponents = mTrackableBehaviour.GetComponentsInChildren<Canvas>(true);
@@ -132,8 +111,6 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
     {
         if (mTrackableBehaviour)
         {
-            setTextCanvas("on Tracking Lost");
-
             var rendererComponents = mTrackableBehaviour.GetComponentsInChildren<Renderer>(true);
             var colliderComponents = mTrackableBehaviour.GetComponentsInChildren<Collider>(true);
             var canvasComponents = mTrackableBehaviour.GetComponentsInChildren<Canvas>(true);
@@ -153,13 +130,4 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
     }
 
     #endregion // PROTECTED_METHODS
-
-    #region TESTING
-    public Text textCanvas;
-
-    public void setTextCanvas(string text)
-    {
-        textCanvas.text = text;
-    }
-    #endregion // Testing
 }
