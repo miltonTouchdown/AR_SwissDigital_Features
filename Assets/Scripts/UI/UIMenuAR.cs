@@ -14,7 +14,11 @@ public class UIMenuAR : MonoBehaviour
     [Header("Video Feedback")]
     public RawImageVideoPlayer imageVideo;
 
+    [Header("Touch Screen")]
+    public GameObject contentTouchScreen;
+
     private bool m_IsGroundDetected = false;
+    private TrackableBehaviour.StatusInfo m_currStatusInfo = TrackableBehaviour.StatusInfo.UNKNOWN;
 
     void Start()
     {
@@ -45,9 +49,52 @@ public class UIMenuAR : MonoBehaviour
         snackBar.setActiveWindow(false);
     }
 
+    public void SetActiveMessagePutObject(bool value)
+    {
+        // Mostrar feedback tocar pantalla para ubicar el objeto en la escena
+        if (!m_IsGroundDetected || (m_currStatusInfo != TrackableBehaviour.StatusInfo.NORMAL)
+            || ARManager.Instance.IsObjectPlaced)
+        {
+            LeanTween.cancel(contentTouchScreen);
+            contentTouchScreen.SetActive(false);
+            return;
+        }
+
+        if (value)
+        {
+            LeanTween.delayedCall(contentTouchScreen, .3f, () => 
+            {
+                contentTouchScreen.SetActive(true);
+
+                TextMeshProUGUI[] arrText = contentTouchScreen.GetComponentsInChildren<TextMeshProUGUI>();
+                Color c = new Color();
+
+                LeanTween.value(contentTouchScreen, (v) =>
+                {
+                    for (int i = 0; i < arrText.Length; i++)
+                    {
+                        c = arrText[i].color;
+                        c.a = v;
+
+                        arrText[i].color = c;
+                    }
+                }, 1f, 0f, 1f).setLoopPingPong();
+            });         
+        }
+        else
+        {
+            LeanTween.cancel(contentTouchScreen);
+            contentTouchScreen.SetActive(false);
+        }
+    }
+
     void OnDevicePoseStatusChanged(TrackableBehaviour.Status status, TrackableBehaviour.StatusInfo statusInfo)
     {
         string statusMessage = "";
+
+        m_currStatusInfo = statusInfo;
+
+        SetActiveMessagePutObject(true);
 
         switch (statusInfo)
         {
@@ -55,8 +102,7 @@ public class UIMenuAR : MonoBehaviour
                 {
                     statusMessage = "";
                     HideSnackBar();
-                    if (imageVideo.IsPlaying) imageVideo.StopVideo();
-
+                    if (imageVideo.IsPlaying) imageVideo.StopVideo();                   
                     break;
                 }
             case TrackableBehaviour.StatusInfo.UNKNOWN:
@@ -133,6 +179,8 @@ public class UIMenuAR : MonoBehaviour
         {
             HideSnackBar();
             if (imageVideo.IsPlaying) imageVideo.StopVideo();
+
+            SetActiveMessagePutObject(true);
         }   
     }
 

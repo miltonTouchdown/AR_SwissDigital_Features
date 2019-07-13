@@ -9,6 +9,11 @@ public class ARManager : MonoBehaviour
     // Indica si se ha colisionado con el suelo para ubicar objetos
     public bool IsHitTest { get; private set; }
 
+    // Indica si el objeto ha sido puesto en la escena
+    public bool IsObjectPlaced { get; private set; }
+
+    private UIMenuAR m_UIMenuAR;
+
     private static ARManager _instance;
     public static ARManager Instance
     {
@@ -33,6 +38,9 @@ public class ARManager : MonoBehaviour
     void Start()
     {
         IsHitTest = false;
+        IsObjectPlaced = false;
+
+        m_UIMenuAR = FindObjectOfType<UIMenuAR>();
         //DeviceTrackerARController.Instance.RegisterDevicePoseStatusChangedCallback(OnDevicePoseStatusChanged);
     }
 
@@ -110,6 +118,20 @@ public class ARManager : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    public void OnTrackingLost()
+    {
+        IsObjectPlaced = false;
+
+        m_UIMenuAR.SetActiveMessagePutObject(true);
+    }
+
+    public void OnTrackingFound()
+    {
+        IsObjectPlaced = true;
+
+        m_UIMenuAR.SetActiveMessagePutObject(false);
     }
 
     // Indica si se ha detectado el suelo
