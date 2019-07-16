@@ -4,61 +4,55 @@ using UnityEngine;
 
 public class ShaderBagControl : MonoBehaviour
 {
-    public float TimeTransition = 1f;
-    public Texture2D CurrTexture;
-    public Texture2D testTexture;
-    public Material matBag;
+    public ZoneBag[] arrZoneBags;
 
-    public bool IsSetTexture = false;
+    [SerializeField]
+    private ModeBagView m_currModeView = ModeBagView.Normal;
 
     void Start()
     {
-        // Hacer visible (alpha)
-        matBag.SetFloat("Vector1_FAB99759", 0f);
+        arrZoneBags = FindObjectsOfType<ZoneBag>();
+
+        setModeView(ModeBagView.Normal);
     }
 
-    public void SetTexture(Texture2D texture)
+    public void setTexture(int id, Texture2D texture)
     {
-        if (IsSetTexture)
-            return;
-
-        IsSetTexture = true;
-        
-        // Desaparecer (0f) objeto cambiando el alpha en el shader. Luego cambiar la texture. Aparecer (1f) el objeto.
-        SetAlpha(false, () => 
+        foreach(ZoneBag zb in arrZoneBags)
         {
-            // El nombre de la variable esta en el shader. Es generado por Unity
-            matBag.SetTexture("Texture2D_F572E918", texture);
-
-            LeanTween.delayedCall(.3f, () => 
+            if(id == zb.id)
             {
-                SetAlpha(true, ()=> { IsSetTexture = false; });
-            });
-        });
+                zb.SetTexture(texture);
+            }else
+            {
+                zb.SetAlpha(false, () =>
+                {
+                    LeanTween.delayedCall(.3f, () =>
+                    {
+                        zb.SetAlpha(true);
+                    });
+                });
+            }
+        }
     }
 
-    public void FocusTarget()
+    public void setFocus(int id)
     {
-
+        foreach(ZoneBag zb in arrZoneBags)
+        {
+            zb.FocusTarget(id == zb.id);
+        }
     }
 
-    public void SetAlpha(bool isVisible, OnTaskComplete onTask = null)
+    public void setModeView(ModeBagView modeView)
     {
-        float to = (isVisible) ? 0f : 1f;
-        float from = (isVisible) ? 1f : 0f;
+        m_currModeView = modeView;
 
-        LeanTween.value(this.gameObject, (f) =>
+        foreach (ZoneBag zb in arrZoneBags)
         {
-            // Cambiar alpha
-            matBag.SetFloat("Vector1_FAB99759", f);
-        }, from, to, TimeTransition).setOnComplete(()=> 
-        {
-            if (onTask != null)
-                onTask();
-        });
+            zb.ChangeModeView(modeView);
+        }
     }
-
-    // Indica si se ha detectado el suelo
-    public delegate void OnTaskComplete();
-    public static event OnTaskComplete onTaskComplete;
 }
+
+public enum ModeBagView { None, Focus, Normal}
