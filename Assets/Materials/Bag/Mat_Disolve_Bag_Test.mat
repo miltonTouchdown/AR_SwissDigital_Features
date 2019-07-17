@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Mat_Disolve_Bag_Tapa
+  m_Name: Mat_Disolve_Bag_Test
   m_Shader: {fileID: 4800000, guid: 99f377f7e97f1684ba884653cbb94c0e, type: 3}
   m_ShaderKeywords: _NORMALMAP _OCCLUSIONMAP
   m_LightmapFlags: 4
@@ -20,15 +20,15 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - Texture2D_51F08247:
-        m_Texture: {fileID: 2800000, guid: a6dfecced8f5dc24f9b166af6aa5fb5b, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_F51598E6:
-        m_Texture: {fileID: 2800000, guid: 072f1687179b64d45827c986e57ee11d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 932861f93909c8b4e8f389b28a094f45, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - Texture2D_F572E918:
-        m_Texture: {fileID: 2800000, guid: 23804dacdbdaa434d96b5b7f7bd56567, type: 3}
+        m_Texture: {fileID: 2800000, guid: baf25f9d275b11941ba493d1bf57a115, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
