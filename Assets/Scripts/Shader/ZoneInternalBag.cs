@@ -74,7 +74,7 @@ public class ZoneInternalBag : ZoneBag
         });
     }
 
-    public override void Hide()
+    public override void Hide(OnTaskComplete onTask = null)
     {
         SetAlpha(false);
     }

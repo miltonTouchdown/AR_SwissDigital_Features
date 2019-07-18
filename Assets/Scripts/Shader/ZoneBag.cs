@@ -52,7 +52,7 @@ public abstract class ZoneBag : MonoBehaviour
       
     }
     
-    public virtual void Hide()
+    public virtual void Hide(OnTaskComplete onTask = null)
     {
 
     }

@@ -7,6 +7,9 @@ public class ShaderBagControl : MonoBehaviour
 {
     public ZoneBag[] arrZoneBags;
 
+    // Tiempo transicion show y hide
+    public float TimeTransition = 1f;
+
     public bool IsShow = false;
 
     [SerializeField]
@@ -16,9 +19,12 @@ public class ShaderBagControl : MonoBehaviour
     {
         arrZoneBags = FindObjectsOfType<ZoneBag>();
 
+        // TODO asignar tiempo transicion a cada zonebag
+
         foreach(ZoneBag z in arrZoneBags)
         {
             z.SetShaderControl(this);
+            z.Hide();
         }
 
         setModeView(ModeBagView.Normal);

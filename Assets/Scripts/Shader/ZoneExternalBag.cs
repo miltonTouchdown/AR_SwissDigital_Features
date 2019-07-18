@@ -92,12 +92,12 @@ public class ZoneExternalBag : ZoneBag
         }
     }
 
-    public override void Hide()
+    public override void Hide(OnTaskComplete onTask = null)
     {
         if (m_currModeView != ModeView)
             return;
 
-        SetAlpha(false);
+        SetAlpha(false, onTask);
     }
 
     public override void Show()
