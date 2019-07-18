@@ -9,7 +9,7 @@ public class ShaderBagControl : MonoBehaviour
     public bool IsShow = false;
 
     [SerializeField]
-    private ModeBagView m_currModeView = ModeBagView.Normal;
+    private ModeBagView m_currModeView = ModeBagView.None;
 
     void Start()
     {
@@ -91,6 +91,9 @@ public class ShaderBagControl : MonoBehaviour
 
     public void setModeView(ModeBagView modeView)
     {
+        if (m_currModeView == modeView)
+            return;
+
         m_currModeView = modeView;
 
         foreach (ZoneBag zb in arrZoneBags)
