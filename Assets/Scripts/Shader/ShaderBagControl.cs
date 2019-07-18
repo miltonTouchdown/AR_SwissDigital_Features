@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ShaderBagControl : MonoBehaviour
@@ -102,27 +103,10 @@ public class ShaderBagControl : MonoBehaviour
         }
     }
 
-    #region TEST
-    public void setModeView(int index)
+    public Texture GetTextureZoneBag(int id)
     {
-        setModeView((ModeBagView)index);
+        return (Texture)arrZoneBags.Single((zb)=> zb.id == id).GetTexture2D();
     }
-
-    public void setTexture1(Texture2D texture)
-    {
-        setTexture(0, texture);
-    }
-
-    public void setTexture2(Texture2D texture)
-    {
-        setTexture(1, texture);
-    }
-
-    public void setTexture3(Texture2D texture)
-    {
-        setTexture(2, texture);
-    }
-    #endregion // TEST
 }
 
 public enum ModeBagView { None, Focus, Normal}

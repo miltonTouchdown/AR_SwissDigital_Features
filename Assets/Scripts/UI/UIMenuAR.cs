@@ -17,6 +17,9 @@ public class UIMenuAR : MonoBehaviour
     [Header("Touch Screen")]
     public GameObject contentTouchScreen;
 
+    [Header("Menu Features")]
+    public UIFeatures uiFeatures;
+
     private bool m_IsGroundDetected = false;
     private TrackableBehaviour.StatusInfo m_currStatusInfo = TrackableBehaviour.StatusInfo.UNKNOWN;
 

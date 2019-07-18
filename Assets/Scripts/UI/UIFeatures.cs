@@ -15,7 +15,8 @@ public class UIFeatures : MonoBehaviour
 
     public RectTransform posSelectedModification;
 
-    public GameObject prefButtonSelector;
+    // El boton fake es permite observar el boton final en su totalidad
+    public GameObject prefButtonSelector, prefFakeButtonSelector;
 
     public enum TypeFeature { Information, Modification}
     public Feature[] features;
@@ -49,36 +50,36 @@ public class UIFeatures : MonoBehaviour
 
     void Start()
     {
-        // Esconder todo
-        //HideAll();
-
         m_shaderControl = FindObjectOfType<ShaderBagControl>();
+
+        // TODO Cambiar textura boton modificadores
+
+        UIButtonModification[] bttnsModifications = modificationTexture.transform.GetComponentsInChildren<UIButtonModification>();
+
+        for(int i = 0; i < bttnsModifications.Length; i++)
+        {
+            // TODO Cambiar texto
+            bttnsModifications[i].SetTexture(m_shaderControl.GetTextureZoneBag(bttnsModifications[i].idZoneModification));
+        }
     }
-    
+
     public void ShowActiveMenu()
     {
-        // TODO Mostrar menu activo
+        // TODO Mostrar menu activo al detectar el AR
     }
 
     public void ShowMenu()
     {
-        m_shaderControl.setModeView(ModeBagView.Normal);
+        IsActive = true;
 
-        m_currFeature = null;
-
-        // desactivar caracteristicas activas
-        for (int i = 0; i < features.Length; i++)
+        if (m_currFeature != null)
         {
-            features[i].isActive = false;
+            RestoreMenu();
 
-            if(features[i].type == TypeFeature.Modification)
-            {
-                for(int x = 0; x < features[i].texturesInformation.Length; x++)
-                {
-                    features[i].texturesInformation[x].isActive = false;
-                }
-            }
+            return;
         }
+
+        m_shaderControl.setModeView(ModeBagView.Normal);
 
         information.setActiveWindow(false);
         title.setActiveWindow(false);
@@ -86,8 +87,23 @@ public class UIFeatures : MonoBehaviour
         selectorTexture.setActiveWindow(false);
 
         LeanTween.delayedCall(.2f, () => { sideMenu.setActiveWindow(true); });
+    }
 
-        // TODO Cambiar shader
+    private void RestoreMenu()
+    {
+        ShowFeature(m_currFeature.id);
+
+        if (m_currFeature.type == TypeFeature.Modification)
+        {
+            var ti =  m_currFeature.texturesInformation.SingleOrDefault((t) => t.isActive == true);
+
+            if(ti == null)
+            {
+                return;
+            }
+
+            ShowSelector(ti.id);
+        }
     }
 
     public void HideMenu()
@@ -97,9 +113,9 @@ public class UIFeatures : MonoBehaviour
 
     public void ShowFeature(int id)
     {
-        Feature feat = features.FirstOrDefault((f)=> f.id == id);
+        var feat = features.FirstOrDefault((f)=> f.id == id);
 
-        if (feat.Equals(null))
+        if (feat == null)
         {
             ShowMenu();
             return;
@@ -140,6 +156,10 @@ public class UIFeatures : MonoBehaviour
             // Modificar texturas
 
             modificationTexture.setActiveWindow(true);
+
+            // Cambiar textura de los botones de acuerdo al modelo
+            // Mostrar texto de boton
+
         }            
     }
 
@@ -147,6 +167,15 @@ public class UIFeatures : MonoBehaviour
     {
         // Mover botones modificadores a un costado
         LeanTween.moveLocal(modificationTexture.gameObject, posSelectedModification.localPosition, modificationTexture.time);
+
+        // TODO fade out del texto 
+        UIButtonModification[] bttnsModifications = modificationTexture.transform.GetComponentsInChildren<UIButtonModification>();
+
+        for (int i = 0; i < bttnsModifications.Length; i++)
+        {
+            bttnsModifications[i].FadeText(true);
+            bttnsModifications[i].GetButton().interactable = false;
+        }
 
         Feature feat = features.FirstOrDefault((f) => f.isActive == true);
 
@@ -159,7 +188,10 @@ public class UIFeatures : MonoBehaviour
             Destroy(listContent.GetChild(i).gameObject);
         }
 
+        // Obtener textura e informacion para utilizarlas en el cambio de texturas del objeto
         TextureInformation ti = feat.texturesInformation.Single((tinfo)=> tinfo.id == id);
+
+        ti.isActive = true;
 
         foreach (Texture t in ti.textures)
         {
@@ -174,11 +206,30 @@ public class UIFeatures : MonoBehaviour
             bttn.transform.GetComponentInChildren<RawImage>().texture = t;
         }
 
+        // Crear boton fake para poder visualizar el ultimo boton
+        // este problema ocurre debido a los diferentes aspect ratios
+        if(ti.textures.Length > 2)
+        {
+            Instantiate(prefFakeButtonSelector, listContent);
+        }
+
         selectorTexture.setActiveWindow(true);
     }
 
     public void HideSelector()
     {
+        // desactivar textura activada
+        m_currFeature.texturesInformation.Single((ti) => ti.isActive == true).isActive = false;
+
+        UIButtonModification[] bttnsModifications = modificationTexture.transform.GetComponentsInChildren<UIButtonModification>();
+
+        for (int i = 0; i < bttnsModifications.Length; i++)
+        {
+            bttnsModifications[i].FadeText(false);
+            bttnsModifications[i].SetTexture(m_shaderControl.GetTextureZoneBag(bttnsModifications[i].idZoneModification));
+            bttnsModifications[i].GetButton().interactable = true;
+        }
+
         selectorTexture.setActiveWindow(false);
 
         modificationTexture.setActiveWindow(true);
@@ -189,25 +240,36 @@ public class UIFeatures : MonoBehaviour
         if (m_currFeature == null)
             return;
 
-        if(m_currFeature.type == TypeFeature.Information)
+        if (selectorTexture.isActive)
         {
-            ShowMenu();
+            HideSelector();
         }
         else
         {
-            if (selectorTexture.isActive)
+            m_currFeature = null;
+
+            // desactivar caracteristicas activas
+            for (int i = 0; i < features.Length; i++)
             {
-                HideSelector();
+                features[i].isActive = false;
+
+                if (features[i].type == TypeFeature.Modification)
+                {
+                    for (int x = 0; x < features[i].texturesInformation.Length; x++)
+                    {
+                        features[i].texturesInformation[x].isActive = false;
+                    }
+                }
             }
-            else
-            {
-                ShowMenu();
-            }
+
+            ShowMenu();
         }
     }
 
     public void HideAll()
     {
+        IsActive = false;
+
         // Esconder todos los menus
         information.setActiveWindow(false);
         sideMenu.setActiveWindow(false);
