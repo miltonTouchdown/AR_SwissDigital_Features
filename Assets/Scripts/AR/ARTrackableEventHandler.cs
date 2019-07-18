@@ -6,6 +6,13 @@ using Vuforia;
 public class ARTrackableEventHandler : DefaultTrackableEventHandler
 {
     private bool m_IsPlaced = false;
+    [SerializeField]
+    private ShaderBagControl m_shaderControl;
+
+    protected override void Start()
+    {
+        base.Start();
+    }
 
     protected override void OnTrackingFound()
     {
@@ -18,6 +25,8 @@ public class ARTrackableEventHandler : DefaultTrackableEventHandler
             m_IsPlaced = true;
 
             ARManager.Instance.OnTrackingFound();
+
+            m_shaderControl.ShowObject();
         }
     }
 
@@ -30,6 +39,8 @@ public class ARTrackableEventHandler : DefaultTrackableEventHandler
             m_IsPlaced = false;
 
             ARManager.Instance.OnTrackingLost();
+
+            m_shaderControl.HideObject();
         }
     }
 

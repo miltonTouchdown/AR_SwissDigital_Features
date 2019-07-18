@@ -20,13 +20,21 @@ public class UIMenuAR : MonoBehaviour
     [Header("Menu Features")]
     public UIFeatures uiFeatures;
 
+    [Header("Loading")]
+    public GameObject Loading;
+
     private bool m_IsGroundDetected = false;
     private TrackableBehaviour.StatusInfo m_currStatusInfo = TrackableBehaviour.StatusInfo.UNKNOWN;
 
     void Start()
     {
+        // Desactivar pantalla carga inicial
+        LeanTween.delayedCall(.8f, () => { Loading.SetActive(false); });
+
         DeviceTrackerARController.Instance.RegisterDevicePoseStatusChangedCallback(OnDevicePoseStatusChanged);
         ARManager.onHitTest += OnHitGround;
+
+        uiFeatures.HideAll();
     }
 
     void OnDestroy()
@@ -52,8 +60,34 @@ public class UIMenuAR : MonoBehaviour
         snackBar.setActiveWindow(false);
     }
 
+    public void ShowMenu()
+    {
+        if (uiFeatures.IsActive)
+            return;
+
+        // Condiciones para no mostrar menu
+        if (!m_IsGroundDetected || (m_currStatusInfo != TrackableBehaviour.StatusInfo.NORMAL)
+            || !ARManager.Instance.IsObjectPlaced)
+        {
+            HideMenu();
+            return;
+        }
+
+        uiFeatures.ShowMenu();
+    }
+
+    public void HideMenu()
+    {
+        if (!uiFeatures.IsActive)
+            return;
+
+        uiFeatures.HideAll();
+    }
+
     public void SetActiveMessagePutObject(bool value)
     {
+        ShowMenu();
+
         // Mostrar feedback tocar pantalla para ubicar el objeto en la escena
         if (!m_IsGroundDetected || (m_currStatusInfo != TrackableBehaviour.StatusInfo.NORMAL)
             || ARManager.Instance.IsObjectPlaced)
@@ -97,7 +131,7 @@ public class UIMenuAR : MonoBehaviour
 
         m_currStatusInfo = statusInfo;
 
-        SetActiveMessagePutObject(true);
+        SetActiveMessagePutObject(true);      
 
         switch (statusInfo)
         {
@@ -154,15 +188,25 @@ public class UIMenuAR : MonoBehaviour
                 break;
         }
 
-        if(statusInfo != TrackableBehaviour.StatusInfo.NORMAL)
+        if (statusInfo != TrackableBehaviour.StatusInfo.NORMAL)
         {
-            ShowSnackBar(statusMessage);
-            if(!imageVideo.IsPlaying) imageVideo.PlayVideo();
-        }else if (!m_IsGroundDetected)
-        {
-            statusMessage = "<b>Apunta</b> con tu dispositivo al suelo y <b>mueve</b> para escanear";
+            HideMenu();
+
             ShowSnackBar(statusMessage);
             if (!imageVideo.IsPlaying) imageVideo.PlayVideo();
+        }
+        else
+        {
+            if (!m_IsGroundDetected)
+            {
+                statusMessage = "<b>Apunta</b> con tu dispositivo al suelo y <b>mueve</b> para escanear";
+                ShowSnackBar(statusMessage);
+                if (!imageVideo.IsPlaying) imageVideo.PlayVideo();
+            }
+            else
+            {
+                ShowMenu();
+            }
         }
     }
 

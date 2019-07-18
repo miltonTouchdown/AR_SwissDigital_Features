@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Test/AR_Without_Marker_Scene.unity
-    guid: 9a92547761c72464ab1d63e65e5358f4
+    path: Assets/Scenes/SwissDigital_Scene.unity
+    guid: 2b96e0ddcf7c2ab49a8550b875eef6c3
   m_configObjects: {}

@@ -12,7 +12,7 @@ public class ZoneExternalBag : ZoneBag
 
         IsShow = false;
 
-        CurrTexture = (Texture2D)matBag.GetTexture("Texture2D_F572E918");
+        //CurrTexture = (Texture2D)matBag.GetTexture("Texture2D_F572E918");
     }
 
     /// <summary>

@@ -51,16 +51,6 @@ public class UIFeatures : MonoBehaviour
     void Start()
     {
         m_shaderControl = FindObjectOfType<ShaderBagControl>();
-
-        // TODO Cambiar textura boton modificadores
-
-        UIButtonModification[] bttnsModifications = modificationTexture.transform.GetComponentsInChildren<UIButtonModification>();
-
-        for(int i = 0; i < bttnsModifications.Length; i++)
-        {
-            // TODO Cambiar texto
-            bttnsModifications[i].SetTexture(m_shaderControl.GetTextureZoneBag(bttnsModifications[i].idZoneModification));
-        }
     }
 
     public void ShowActiveMenu()
@@ -77,6 +67,15 @@ public class UIFeatures : MonoBehaviour
             RestoreMenu();
 
             return;
+        }
+
+        // Cambiar textura boton modificadores
+        UIButtonModification[] bttnsModifications = modificationTexture.transform.GetComponentsInChildren<UIButtonModification>();
+
+        for (int i = 0; i < bttnsModifications.Length; i++)
+        {
+            // TODO Cambiar texto
+            bttnsModifications[i].SetTexture(m_shaderControl.GetTextureZoneBag(bttnsModifications[i].idZoneModification));
         }
 
         m_shaderControl.setModeView(ModeBagView.Normal);
