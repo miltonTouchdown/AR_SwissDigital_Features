@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class UIFade : MonoBehaviour
 {
+    public float timeFade = .3f;
+
     private void Start()
     {
     }
@@ -14,6 +16,11 @@ public class UIFade : MonoBehaviour
             if(onFinish != null)
                 onFinish();
         });
+    }
+
+    public void Fade(float to)
+    {
+        LeanTween.alpha(gameObject.GetComponent<RectTransform>(), to, timeFade);
     }
 
     // Indica si se ha detectado el suelo

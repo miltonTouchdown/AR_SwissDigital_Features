@@ -125,12 +125,6 @@ public class UIFeatures : MonoBehaviour
         // Esconder side menu
         HideMenu();
 
-        // mover boton a posicion del titulo
-            // crear boton
-            // mover a posicion titulo
-            // mostrar menu titulo (fade)
-            // destruir boton creado
-
         // al finalizar movimiento boton, mostrar menu features
         title.GetComponentInChildren<Text>().text = feat.title;
         title.setActiveWindow(true);
